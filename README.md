@@ -40,4 +40,4 @@ const apiKey = 'YOUR_OPENWEATHERMAP_API_KEY';
 
 ## Preview
 
-![Weather Dashboard App](image-1.png)
+![Weather Dashboard App](image.png)
