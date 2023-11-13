@@ -1,8 +1,6 @@
 document.addEventListener('DOMContentLoaded', function () {
     const form = document.getElementById('search-form');
     const cityInput = document.getElementById('city-input');
-    const currentWeatherDiv = document.getElementById('current-weather');
-    const forecastDiv = document.getElementById('forecast');
     const searchHistoryDiv = document.getElementById('search-history');
 
     form.addEventListener('submit', function (e) {
@@ -39,37 +37,50 @@ document.addEventListener('DOMContentLoaded', function () {
             .catch(error => console.error('Error fetching weather data:', error));
     }
 
+    function kelvinToFahrenheit(kelvin) {
+        return ((kelvin - 273.15) * 9/5) + 32;
+    }
+    
+
     function displayWeather(data) {
-        // Extract relevant data from the 'data' object
-        const city = data.city.name;
-        const currentWeather = data.list[0];
-        const forecast = data.list.slice(1, 6); // Get the next 5 days
-
-        // Display current weather
-        currentWeatherDiv.innerHTML = `
-            <h2>${city}</h2>
-            <p>Date: ${currentWeather.dt_txt}</p>
-            <p>Temperature: ${currentWeather.main.temp} K</p>
-            <p>Humidity: ${currentWeather.main.humidity} %</p>
-            <p>Wind Speed: ${currentWeather.wind.speed} m/s</p>
-        `;
-
-        // Display forecast
+        const forecastDiv = document.getElementById('forecast');
         forecastDiv.innerHTML = '<h2>5-Day Forecast</h2>';
-        forecast.forEach(day => {
-            forecastDiv.innerHTML += `
-                <div class="forecast-item">
+    
+        const uniqueDays = new Set();
+    
+        data.list.forEach(day => {
+            const date = new Date(day.dt * 1000);
+            const dayOfWeek = getDayOfWeek(date);
+            const temperatureFahrenheit = kelvinToFahrenheit(day.main.temp);
+    
+            if (!uniqueDays.has(dayOfWeek)) {
+                const forecastItem = document.createElement('div');
+                forecastItem.classList.add('forecast-item');
+                forecastItem.innerHTML = `
+                    <p>Day: ${dayOfWeek}</p>
                     <p>Date: ${day.dt_txt}</p>
-                    <p>Temperature: ${day.main.temp} K</p>
+                    <p>Temperature: ${temperatureFahrenheit.toFixed(2)} °F</p>
                     <p>Humidity: ${day.main.humidity} %</p>
                     <p>Wind Speed: ${day.wind.speed} m/s</p>
-                </div>
-            `;
+                `;
+                forecastDiv.appendChild(forecastItem);
+                uniqueDays.add(dayOfWeek);
+            }
         });
     }
+    
 
+    function getDayOfWeek(dateString) {
+        const date = new Date(dateString);
+        if (isNaN(date)) {
+            return 'Invalid Date';
+        }
+        const options = { weekday: 'long' };
+        return date.toLocaleDateString('en-US', options);
+    }
+    
+    
     function saveToLocalStorage(city) {
-        // Implement code to save the searched city to local storage
         let searchHistory = JSON.parse(localStorage.getItem('searchHistory')) || [];
         if (!searchHistory.includes(city)) {
             searchHistory.push(city);
@@ -79,14 +90,12 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function displaySearchHistory() {
-        // Implement code to display search history
         const searchHistory = JSON.parse(localStorage.getItem('searchHistory')) || [];
         searchHistoryDiv.innerHTML = '<h2>Search History</h2>';
         searchHistory.forEach(city => {
             searchHistoryDiv.innerHTML += `<p class="history-item">${city}</p>`;
         });
 
-        // Add event listeners to history items
         const historyItems = document.querySelectorAll('.history-item');
         historyItems.forEach(item => {
             item.addEventListener('click', function () {
