@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     function getCoordinatesAndWeather(city) {
-        const apiKey = 'YOUR_API_KEY';
+        const apiKey = 'e3cc80e747ac2d6ed947b53878651b5e';
         const coordinateUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}`;
 
         fetch(coordinateUrl)
@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function getWeatherData(lat, lon) {
-        const apiKey = 'YOUR_API_KEY';
+        const apiKey = 'e3cc80e747ac2d6ed947b53878651b5e';
         const apiUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${apiKey}`;
 
         fetch(apiUrl)
